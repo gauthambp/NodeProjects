@@ -13,6 +13,9 @@ Genre=require('./models/Genre');
 //database Object
 //var db= mongoose.connection;
 //handle route note:/ represents the home page
+
+//Use would be always used first by express
+app.use(express.static('public'));
 //The below function takes request and response
 app.get('/',function(req,res){
     //sends the response to the browser
