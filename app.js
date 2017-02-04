@@ -18,6 +18,10 @@ app.get('/',function(req,res){
     //sends the response to the browser
     res.send("Hello World");
 });
+app.get('/books',function(req,res){
+    //sends the response to the browser
+    res.send("Hello Books");
+});
 //app.get('api/genres',function(req,res){
  // Genre.getGenres(function(err,genres){
  // if(err){
