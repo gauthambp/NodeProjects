@@ -16,6 +16,9 @@ Genre=require('./models/Genre');
 
 //Use would be always used first by express
 app.use(express.static('public'));
+//Set second static direcotry
+app.use(express.static('src/views'));
+
 //The below function takes request and response
 app.get('/',function(req,res){
     //sends the response to the browser
