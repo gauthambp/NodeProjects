@@ -62,10 +62,11 @@ app.use('/api/Users/:_id',function(req,res,next){
              {
                     req.user=user;
                next();
+                res.status(200).send('Success');
              }
             else
             {
-              res.status(404).send('no book found');
+              res.status(404).send('no user found');
             }
         });
 });
@@ -153,6 +154,24 @@ app.post('/api/Users',function(req, res) {
         });
        
     });
+/**
+  * DELETE
+ */  
+app.delete('/api/Users/:_id',function(req,res){
+  //delete the document frmom the mongodb collection
+  req.user.remove(function (err,res){
+     if(err){
+       //res.status(500).send(err);
+       console.log('Error');
+     }
+      else
+      {
+        //console.log('Success');
+        //res.status(204).send('Success')
+    }
+     
+  });
+});
 var port =5000;
 //Specify a port to listen for express
 app.listen(port,function(err){
