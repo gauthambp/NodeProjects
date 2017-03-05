@@ -16,6 +16,7 @@ app.use(function(req, res, next) {
   next();
 });
 
+
 app.get('/', function(req, res, next) {
   // Handle the get for this route
 });
@@ -32,7 +33,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/Ecommerce');
 //log connection state
 console.log(mongoose.connection.readyState);
 //database Object
-//var db= mongoose.connection;
 //Genre schema. we can do validation
 var companySchema=mongoose.Schema({
  companyName:{
@@ -55,6 +55,7 @@ app.get('/api/Companys',function(req,res){
     res.send(companys);
 });
 });
+
 //Model for fetching users
 var userSchema=mongoose.Schema({
     firstName:{
@@ -87,16 +88,33 @@ app.get("/api/Users",function(req,res){
 
 //Using find to fetch all the users in the db
 app.get("/api/Users/:_id",function(req,res){
-      User.findById(req.params._id, function(err, bear) {
+      User.findById(req.params._id, function(err, user) {
             if (err)
                 res.send(err);
-            res.json(bear);
+            res.json(user);
         });
   });
- 
+//Use bodyParser
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.json());
 
-//Fetch specific user
-
+//Post
+app.post('/api/Users',function(req, res) {
+  var users = new User(req.body);
+  
+  //save users
+   users.save(function(err) {
+    if (err) {
+      return res.send(err);
+    }
+    else{
+    console.log('Success');
+   }
+  });
+  //res.send('Responding');*/
+  console.log(users);
+  res.send(users);
+});
 var port =5000;
 //Specify a port to listen for express
 app.listen(port,function(err){

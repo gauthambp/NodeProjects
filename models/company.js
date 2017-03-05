@@ -12,7 +12,7 @@ var companySchema=mongoose.Schema({
 });
 
 //Creating a model using its schema
-var Company=module.exports=mongoose.model('Company',companySchema);
+var Company=module.exports = mongoose.model("companys",companySchema)
 
 //Get genreSchema. It would take a call back which would be entered through the route file
 module.exports.getCompanies=function(callback,limit){
