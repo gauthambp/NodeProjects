@@ -33,42 +33,53 @@ Product=require('./models/product');
 mongoose.connect('mongodb://127.0.0.1:27017/Ecommerce');
 //log connection state
 console.log(mongoose.connection.readyState);
-//database Object
-//Genre schema. we can do validation
-var companySchema=mongoose.Schema({
- companyName:{
-     type:String,
-     required:true
-  },
-  location:{
-     type:String
-  }
-});
 
-//Creating a model using its schema
-var Company= mongoose.model("companys",companySchema)
+
+//Load the model for company
+Company=require('./models/company');
 
 //Using find to fetch the collection
 app.get('/api/Companys',function(req,res){
-    Company.find({},function(req,companys){
+  //Filter query
+  var query=req.query;
+    Company.find(query,function(req,companys){
     console.log(companys);
     //sends the response to the browser
     res.send(companys);
 });
 });
-
 //Load the model for users
 User=require('./models/user');
+//Custom middleware to find if user exists
+app.use('/api/Users/:_id',function(req,res,next){
+  
+  console.log('custom middleware');
+      //Find based on ID
+       User.findById(req.params._id, function(err, user) {
+             if (err)
+                res.status(500).send(err);
+              //fetch user and send it to next function
+             else if(user)
+             {
+                    req.user=user;
+               next();
+             }
+            else
+            {
+              res.status(404).send('no book found');
+            }
+        });
+});
+
 /**
  * 
  * GET
  */
 //Using find to fetch all the users in the db
 app.get("/api/Users",function(req,res){
-//Get the filter query
+//Filter query
   var query=req.query;
       User.find(query, function(err, user) {
-      
            if (err)
                 res.send(err);
             else
@@ -78,14 +89,8 @@ app.get("/api/Users",function(req,res){
   });
   //Get specific record
   app.get("/api/Users/:_id",function(req,res){
-        //Find based on ID
-       User.findById(req.params._id, function(err, user) {
-             if (err)
-                res.send(err);
-            else
-                res.send(user)
-            //res.json(user);
-        });
+      //use custom middleware
+       res.json(req.user)
   });
 //Use bodyParser
 app.use(bodyParser.urlencoded({extended:true}));
@@ -125,20 +130,14 @@ app.post('/api/Users',function(req, res) {
           
           user.firstName=req.body.firstName;
           user.lastName=req.body.lastName;
-          console.log(user);
-          //console.log(req);
-          //console.log('Found the Specified document');
-          
           user.save(function(err)
           {
                if (err) {
-                      console.log('Error while editing');
-                      console.log(err);
-                      //return res.send(err);
+                        return res.send(err);
                       }
               else{
-              //console.log('Edit Succeded');
-              //res.send(users)
+              console.log('Edit Succeded');
+              res.send(users)
             }
           });
           res.json(user)
