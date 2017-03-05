@@ -52,7 +52,6 @@ app.get('/api/Companys',function(req,res){
 User=require('./models/user');
 //Custom middleware to find if user exists
 app.use('/api/Users/:_id',function(req,res,next){
-  
   console.log('custom middleware');
       //Find based on ID
        User.findById(req.params._id, function(err, user) {
@@ -118,32 +117,12 @@ app.post('/api/Users',function(req, res) {
   * PUT
 */
   app.put('/api/Users/:_id',function(req,res){
-  //Get the filter query
-      User.findById(req.params._id, function(err, user) {
-        if(err)
-          {
-            res.send(err);
-          }
-        //Update 
-        else
-        {
-          
-          user.firstName=req.body.firstName;
-          user.lastName=req.body.lastName;
-          user.save(function(err)
-          {
-               if (err) {
-                        return res.send(err);
-                      }
-              else{
-              console.log('Edit Succeded');
-              res.send(users)
-            }
-          });
-          res.json(user)
-        }
+      //use custom middleware tp fetch the document
+        req.user.firstName=req.body.firstName;
+        req.user.lastName=req.body.lastName;
+        req.user.save();
+        res.json(req.user);
     });
-  });
 
 var port =5000;
 //Specify a port to listen for express
