@@ -28,6 +28,7 @@ app.post('/', function(req, res, next) {
 Genre=require('./models/Genre');
 //Company=require('./models/company');
 Product=require('./models/product');
+
 //connect to mongoose
 mongoose.connect('mongodb://127.0.0.1:27017/Ecommerce');
 //log connection state
@@ -56,65 +57,83 @@ app.get('/api/Companys',function(req,res){
 });
 });
 
-//Model for fetching users
-var userSchema=mongoose.Schema({
-    firstName:{
-      type:String,
-      required:true
-    },
-    lastName:{
-      type:String
-      
-    }
-});
-//User Model
-var User=mongoose.model("users",userSchema)
-
+//Load the model for users
+User=require('./models/user');
+/**
+ * 
+ * GET
+ */
 //Using find to fetch all the users in the db
 app.get("/api/Users",function(req,res){
-  User.find({},function (err,user){
-    if(err)
-    {
-       console.log(err);
-       res.send(err);
-    }
-    else
-   {
-     console.log(user);
-    res.send(user);}
-  });
 
-});
-
-//Using find to fetch all the users in the db
-app.get("/api/Users/:_id",function(req,res){
-      User.findById(req.params._id, function(err, user) {
-            if (err)
+//Get the filter query
+  var query=req.query;
+      User.find(query, function(err, user) {
+      
+           if (err)
                 res.send(err);
-            res.json(user);
+            else
+                res.send(user)
+            //res.json(user);
+        });
+  });
+  //Get specific record
+  app.get("/api/Users/:_id",function(req,res){
+        //Find based on ID
+       User.findById(req.params._id, function(err, user) {
+             if (err)
+                res.send(err);
+            else
+                res.send(user)
+            //res.json(user);
         });
   });
 //Use bodyParser
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 
-//Post
+/**
+ * POST
+ */
 app.post('/api/Users',function(req, res) {
   var users = new User(req.body);
-  
   //save users
    users.save(function(err) {
+    //Check for error
     if (err) {
       return res.send(err);
     }
     else{
     console.log('Success');
-   }
+    res.send(users)
+    }
   });
   //res.send('Responding');*/
-  console.log(users);
-  res.send(users);
-});
+ });
+ 
+ /**
+  * PUT
+*/
+  app.put('/api/Users/:_id',function(req,res){
+  //Get the filter query
+  var query=req.query;
+      User.findById(req.params._id, function(err, user) {
+        if(err)
+          {
+            res.send(err);
+            console.log(err)
+          }
+        //Update 
+        else
+        {
+          user.firstName=req.body.firstName;
+          user.lastName=req.body.lastName;
+          user.save();
+          res.json(user)
+        }
+    });
+  });
+
 var port =5000;
 //Specify a port to listen for express
 app.listen(port,function(err){
