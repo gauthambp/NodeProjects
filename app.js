@@ -65,7 +65,6 @@ User=require('./models/user');
  */
 //Using find to fetch all the users in the db
 app.get("/api/Users",function(req,res){
-
 //Get the filter query
   var query=req.query;
       User.find(query, function(err, user) {
@@ -91,7 +90,6 @@ app.get("/api/Users",function(req,res){
 //Use bodyParser
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
-
 /**
  * POST
  */
@@ -116,19 +114,33 @@ app.post('/api/Users',function(req, res) {
 */
   app.put('/api/Users/:_id',function(req,res){
   //Get the filter query
-  var query=req.query;
       User.findById(req.params._id, function(err, user) {
         if(err)
           {
             res.send(err);
-            console.log(err)
           }
         //Update 
         else
         {
+          
           user.firstName=req.body.firstName;
           user.lastName=req.body.lastName;
-          user.save();
+          console.log(user);
+          //console.log(req);
+          //console.log('Found the Specified document');
+          
+          user.save(function(err)
+          {
+               if (err) {
+                      console.log('Error while editing');
+                      console.log(err);
+                      //return res.send(err);
+                      }
+              else{
+              //console.log('Edit Succeded');
+              //res.send(users)
+            }
+          });
           res.json(user)
         }
     });
