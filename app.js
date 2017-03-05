@@ -115,15 +115,44 @@ app.post('/api/Users',function(req, res) {
  
  /**
   * PUT
-*/
+ */
   app.put('/api/Users/:_id',function(req,res){
       //use custom middleware tp fetch the document
         req.user.firstName=req.body.firstName;
         req.user.lastName=req.body.lastName;
-        req.user.save();
-        res.json(req.user);
+        req.user.save(function(err){
+           if (err)
+                res.status(500).send(err);
+              //fetch user and send it to next function
+             else {
+                 res.json(req.user);
+             }
+        });
     });
-
+/**
+  * PATCH
+ */
+ app.patch('/api/Users/:_id',function(req,res){
+     //We do not want ot update the ID. We need to delete ID from the body parser
+     if(req.body._id)
+     {
+        delete req.body_id;
+     }
+     //Fetch all the keys in the body parser
+      for(var u in req.body){
+      //assignind the body content to the req object
+        req.user[u]=req.body[u];
+      }
+        req.user.save(function(err){
+           if (err)
+                res.status(500).send(err);
+              //fetch user and send it to next function
+             else {
+                 res.json(req.user);
+             }
+        });
+       
+    });
 var port =5000;
 //Specify a port to listen for express
 app.listen(port,function(err){
