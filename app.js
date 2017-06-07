@@ -1,12 +1,27 @@
 //web framework for node.js
-var express= require('express')
+var express   =require('express')
 //Gives an instance of express
-var app=express();
+var app       =express();
 //Used for post request and forms
 var bodyParser=require('body-parser');
 //MongoDB Object modeling tool designed to work in asynchronous environment
-var mongoose = require('mongoose');
+var mongoose  =require('mongoose');
+//logger middleware function using the given format and options
+var morgan    =require('morgan');
+//Reference connection string
+var config    =require("./config") 
+//Defines a compact and self-contained way for securely transmit information between parties as a JSON object
+var jwt       =require('jwt-simple');
+//Port where it would be listening
+var port      =process.env.PORT || 5000;
+//Get body parser
+app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
 
+//Log to console
+app.use(morgan('dev'));
+
+//Set debug to true
 mongoose.set('debug', true);
 
 //Enable cors 
@@ -15,7 +30,8 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
-
+//Connect to the database
+mongoose.connect(config.database);
 
 app.get('/', function(req, res, next) {
   // Handle the get for this route
@@ -29,8 +45,6 @@ Genre=require('./models/Genre');
 //Company=require('./models/company');
 Product=require('./models/product');
 
-//connect to mongoose
-mongoose.connect('mongodb://127.0.0.1:27017/Ecommerce');
 //log connection state
 console.log(mongoose.connection.readyState);
 
@@ -159,20 +173,9 @@ app.post('/api/Users',function(req, res) {
  */  
 app.delete('/api/Users/:_id',function(req,res){
   //delete the document frmom the mongodb collection
-  req.user.remove(function (err,res){
-     if(err){
-       //res.status(500).send(err);
-       console.log('Error');
-     }
-      else
-      {
-        //console.log('Success');
-        //res.status(204).send('Success')
-    }
-     
-  });
+  req.user.remove();
+ 
 });
-var port =5000;
 //Specify a port to listen for express
 app.listen(port,function(err){
  console.log('Running on port '+port);
